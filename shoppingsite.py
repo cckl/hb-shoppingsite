@@ -101,32 +101,28 @@ def add_to_cart(melon_id):
     # - increment the count for that melon id by 1
     # - flash a success message
     # - redirect the user to the cart page
-    
-    session['cart'] = {}
-    
-    if session['cart']:
+
+
+    if 'cart' in session:
         print("Cart exists")
         session['cart'][melon_id] = session['cart'].get(melon_id, 0)+1
     else:
         print("Doesn't exist")
+        session['cart'] = {}
         session['cart'][melon_id] = 1
 
+    print("\n\n\n\n\n\n")
     print(session['cart'])
 
+    flash("Melon added to cart!")
 
-        
-
-    # cart = []
-    # cart.append(session[melon_id])
-    # return cart
-    
-    return "Oops! This needs to be implemented!"
+    return redirect("/cart")
 
 
 @app.route("/login", methods=["GET"])
 def show_login():
     """Show login form."""
- 
+
     return render_template("login.html")
 
 
