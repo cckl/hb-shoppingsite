@@ -37,6 +37,7 @@ def list_melons():
     """Return page showing all the melons ubermelon has to offer"""
 
     melon_list = melons.get_all()
+
     return render_template("all_melons.html",
                            melon_list=melon_list)
 
@@ -50,7 +51,6 @@ def show_melon(melon_id):
     """
 
     melon = melons.get_by_id(melon_id)
-    print(melon)
 
     return render_template("melon_details.html",
                            display_melon=melon)
@@ -78,9 +78,22 @@ def show_shopping_cart():
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
 
+    if 'cart' in session:
+        cart = session['cart']
+        all_melons = []
+        grand_total = 0
 
+        for melon in cart:
+            display_melon = melons.get_by_id(melon)
+            display_melon.qty = cart[melon]
+            display_melon.total = display_melon.qty * display_melon.price
+            all_melons.append(display_melon)
+            grand_total += display_melon.total
 
-    return render_template("cart.html")
+        return render_template("cart.html", cart=cart, all_melons=all_melons, total=grand_total)
+
+    else:
+        return render_template("cart.html")
 
 
 @app.route("/add_to_cart/<melon_id>")
@@ -105,13 +118,13 @@ def add_to_cart(melon_id):
 
     if 'cart' in session:
         print("Cart exists")
-        session['cart'][melon_id] = session['cart'].get(melon_id, 0)+1
+        session['cart'][melon_id] = session['cart'].get(melon_id, 0) + 1
     else:
         print("Doesn't exist")
         session['cart'] = {}
         session['cart'][melon_id] = 1
 
-    print("\n\n\n\n\n\n")
+    print("\n\n\n\n")
     print(session['cart'])
 
     flash("Melon added to cart!")
